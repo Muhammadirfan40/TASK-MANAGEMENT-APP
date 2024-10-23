@@ -8,6 +8,7 @@ import DashboardPage from './Pages/DashboardPage/DashboardPage';
 import Mytasks from './Pages/Mytasks/Mytasks';
 import ProfileUpdate from './Pages/ProfileUpdate/ProfileUpdate';
 import LoginUsers from './Pages/LoginUsers/LoginUsers';
+import ProjectsManagement from './Component/ProjectsManagement/ProjectsManagement';
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
         <Route path='/dashboardpage/profileupdate' element={<ProfileUpdate />} />
         <Route path='/dashboardpage/mytasks' element={<Mytasks />} />
         <Route path='/dashboardpage/allusers' element={<LoginUsers />} />
+        <Route path='/dashboardpage/projectmanagement' element={<ProjectsManagement />} />
 
 
 

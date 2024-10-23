@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // import { updateProfile } from '../redux/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'; // Adjusted import
 
 const ProfileUpdate = () => {
     const dispatch = useDispatch();
@@ -16,6 +17,8 @@ const ProfileUpdate = () => {
         password: ''
     });
 
+    const [showPassword, setShowPassword] = useState(false); // State to manage password visibility
+
     const handleChange = (e) => {
         setFormData({
             ...formData,
@@ -29,8 +32,12 @@ const ProfileUpdate = () => {
         navigate('/dashboard');
     };
 
+    const togglePasswordVisibility = () => {
+        setShowPassword((prev) => !prev); // Toggle the visibility state
+    };
+
     return (
-        <div className="flex justify-center  bg-gray-100">
+        <div className="flex justify-center bg-gray-100">
             <div className="w-full max-w-md bg-white shadow-md rounded-lg p-8">
                 <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">Update Profile</h2>
                 <form onSubmit={handleSubmit}>
@@ -64,12 +71,12 @@ const ProfileUpdate = () => {
                         />
                     </div>
 
-                    <div className="mb-6">
+                    <div className="mb-6 relative">
                         <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="password">
                             Password
                         </label>
                         <input
-                            type="password"
+                            type={showPassword ? "text" : "password"} // Toggle between text and password
                             id="password"
                             name="password"
                             value={formData.password}
@@ -77,7 +84,19 @@ const ProfileUpdate = () => {
                             className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-800 focus:ring focus:ring-gray-400 focus:outline-none"
                             required
                         />
+                        <button
+                            type="button"
+                            onClick={togglePasswordVisibility}
+                            className="absolute right-3 top-1/2 transform  focus:outline-none"
+                        >
+                            {showPassword ? (
+                                <EyeSlashIcon className="h-5 w-5 text-gray-600" />
+                            ) : (
+                                <EyeIcon className="h-5 w-5 text-gray-600" />
+                            )}
+                        </button>
                     </div>
+
 
                     <button
                         type="submit"
