@@ -1,14 +1,51 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, Link } from 'react-router-dom';
+import { loginUser } from '../../redux/slices/loginSlice'; // Ensure the path is correct for loginSlice
 import Backgroundimg from '../../Component/Backgroundimg/Backgroundimg';
 
 const LoginPage = () => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [loading, setLoading] = useState(false); // New loading state
 
-    // Function to toggle password visibility
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { user, error } = useSelector((state) => state.login);
+
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
     };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true); // Set loading state to true when login request starts
+        const response = await dispatch(loginUser({ email, password })); // Dispatch the loginUser action
+console.log("login page",response.payload.data.token);
+
+        if (response.meta.requestStatus === 'fulfilled') {
+            const token = response.payload.data.token; // Adjust token access according to your response structure
+            localStorage.setItem('token', token); // Store token in local storage
+            navigate('/dashboardpage'); // Redirect to the dashboard
+        } else {
+            console.error(response.payload); // Log the error payload if login fails
+        }
+        setLoading(false); // Set loading state back to false when request finishes
+    };
+
+    useEffect(() => {
+        // Redirect to dashboard if login is successful
+        if (user) {
+            navigate('/dashboardpage'); // Navigate to the dashboard
+        }
+
+        // Optionally, handle errors if needed
+        if (error) {
+            console.error(error); // Log error to the console
+            // You can display the error message to the user here
+        }
+    }, [user, error, navigate]); // Dependency array to run effect when user or error changes
 
     return (
         <>
@@ -17,7 +54,7 @@ const LoginPage = () => {
                 <div className="bg-white bg-opacity-60 p-8 rounded-lg shadow-lg w-full max-w-md">
                     <h2 className="text-2xl font-bold text-center text-black mb-8">Login</h2>
 
-                    <form>
+                    <form onSubmit={handleSubmit}>
                         {/* Email Input */}
                         <div className="mb-4">
                             <label className="block text-black font-medium mb-2" htmlFor="email">
@@ -26,8 +63,11 @@ const LoginPage = () => {
                             <input
                                 type="email"
                                 id="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                                 placeholder="Enter your email"
+                                required // Added required attribute for validation
                             />
                         </div>
 
@@ -40,8 +80,11 @@ const LoginPage = () => {
                                 <input
                                     type={passwordVisible ? 'text' : 'password'}
                                     id="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black pr-10"
                                     placeholder="Enter your password"
+                                    required // Added required attribute for validation
                                 />
                                 <button
                                     type="button"
@@ -96,12 +139,18 @@ const LoginPage = () => {
                             </a>
                         </div>
 
+                        {/* Show "Logging in..." if loading is true */}
+                        {loading && (
+                            <div className="text-center text-gray-600 mb-4">Logging in...</div>
+                        )}
+
                         {/* Login Button */}
                         <button
                             type="submit"
-                            className="w-full bg-black text-white font-medium py-2 rounded-md hover:bg-gray-800 transition-colors duration-300"
+                            className={`w-full bg-black text-white font-medium py-2 rounded-md transition-colors duration-300 ${loading ? 'cursor-not-allowed opacity-50' : 'hover:bg-gray-800'}`}
+                            disabled={loading} // Disable the button while loading
                         >
-                            Login
+                            {loading ? 'Logging in...' : 'Login'}
                         </button>
                     </form>
 

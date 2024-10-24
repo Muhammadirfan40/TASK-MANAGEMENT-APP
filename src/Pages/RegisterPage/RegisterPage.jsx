@@ -1,34 +1,43 @@
 import React, { useState } from 'react';
 import Backgroundimg from '../../Component/Backgroundimg/Backgroundimg';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { registerUser, clearError } from '../../redux/Slices/registerSlice'; // Adjust the import path as necessary
 
 const RegisterPage = () => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { loading, error } = useSelector((state) => state.register);
+
     const [formData, setFormData] = useState({
-        name: '',   // Changed firstName + lastName to single 'name' field
+        name: '',
         email: '',
         password: ''
     });
 
     const [allFieldsFilled, setAllFieldsFilled] = useState(true);
 
-    // Handle input changes
     const handleInputChange = (e) => {
         const { id, value } = e.target;
         setFormData({ ...formData, [id]: value });
     };
 
-    // Handle form submission
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Check if all fields are filled
         if (Object.values(formData).some((field) => field === '')) {
             setAllFieldsFilled(false);
             return;
         } else {
             setAllFieldsFilled(true);
-            // Submit form logic here (e.g., API call)
-            console.log('Form submitted:', formData);
+            dispatch(registerUser(formData))
+                .unwrap()
+                .then(() => {
+                    navigate('/'); // Redirect to login or dashboard after successful registration
+                })
+                .catch(() => {
+                    // Handle the error state here if needed
+                });
         }
     };
 
@@ -89,15 +98,21 @@ const RegisterPage = () => {
                         <button
                             type="submit"
                             className="w-full bg-black text-white font-medium py-2 rounded-md hover:bg-gray-800 transition-colors duration-300"
+                            disabled={loading}
                         >
-                            Sign Up
+                            {loading ? 'Signing Up...' : 'Sign Up'}
                         </button>
                     </form>
 
-                    {/* Display error if not all fields are filled */}
+                    {/* Display error if not all fields are filled or if there's an error */}
                     {!allFieldsFilled && (
                         <p className="text-red-500 text-sm mt-4 text-center">
                             Please fill in all fields
+                        </p>
+                    )}
+                    {error && (
+                        <p className="text-red-500 text-sm mt-4 text-center">
+                            {error}
                         </p>
                     )}
 
