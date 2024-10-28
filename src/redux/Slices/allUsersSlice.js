@@ -6,24 +6,76 @@ export const fetchAllUsers = createAsyncThunk(
   'users/fetchAllUsers',
   async (_, { rejectWithValue }) => {
     const token = localStorage.getItem('token');
-    console.log('Token being used:', token); // Log the token to verify its value
-
     if (!token) {
-      console.error('No token found. Please log in again.'); // Log if token is missing
       return rejectWithValue('No token found. Please log in again.');
     }
 
     try {
       const response = await axios.get('https://task-manager.codionslab.com/api/v1/admin/user', {
         headers: {
-          Authorization: `Bearer ${token}`, // Include your token here
+          Authorization: `Bearer ${token}`,
         },
       });
       return response.data;
     } catch (error) {
-      const errorMsg = error.response?.data?.message || error.message || 'Error fetching users';
-      console.error('Error fetching users:', errorMsg); // Log error details
-      return rejectWithValue(errorMsg);
+      return rejectWithValue(error.response?.data?.message || error.message || 'Error fetching users');
+    }
+  }
+);
+
+// Create a new user with token in headers
+export const createUser = createAsyncThunk(
+  'users/createUser',
+  async (newUserData, { rejectWithValue }) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return rejectWithValue('No token found. Please log in again.');
+    }
+
+    try {
+      const response = await axios.post(
+        'https://task-manager.codionslab.com/api/v1/admin/user',
+        newUserData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message || 'Error creating user');
+    }
+  }
+);
+
+// Async thunk for editing a user
+export const editUser = createAsyncThunk(
+  'users/editUser',
+  async ({ userId, updatedUserData }, { rejectWithValue }) => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      return rejectWithValue('No token found. Please log in again.');
+    }
+
+    try {
+      const response = await axios.put(
+        `https://task-manager.codionslab.com/api/v1/admin/user/${userId}`,
+        updatedUserData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || error.message || 'Error updating user'
+      );
     }
   }
 );
@@ -31,25 +83,56 @@ export const fetchAllUsers = createAsyncThunk(
 const allUsersSlice = createSlice({
   name: 'allUsers',
   initialState: {
-    users: [], // Initialize users as an empty array
+    users: [],
     status: 'idle',
     error: null,
+    createStatus: 'idle', // Track the status for user creation
+    createError: null,    // Track errors for user creation
+    editStatus: 'idle',   // Track the status for user editing
+    editError: null,      // Track errors for user editing
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchAllUsers.pending, (state) => {
-        state.status = 'loading'; // Set loading status when fetching
+        state.status = 'loading';
       })
       .addCase(fetchAllUsers.fulfilled, (state, action) => {
-        state.status = 'succeeded'; // Set succeeded status on successful fetch
-        state.users = action.payload.data.data; // Update the users state with the fetched data
-        state.error = null; // Clear any previous errors
+        state.status = 'succeeded';
+        state.users = action.payload.data.data;
+        state.error = null;
       })
       .addCase(fetchAllUsers.rejected, (state, action) => {
-        state.status = 'failed'; // Set failed status on error
-        state.error = action.payload || 'Failed to fetch users'; // Capture detailed error message
-        console.error('Fetch all users failed:', state.error); // Log error details
+        state.status = 'failed';
+        state.error = action.payload || 'Failed to fetch users';
+      })
+      .addCase(createUser.pending, (state) => {
+        state.createStatus = 'loading';
+      })
+      .addCase(createUser.fulfilled, (state, action) => {
+        state.createStatus = 'succeeded';
+        state.users.push(action.payload.data); // Add the new user to the users list
+        state.createError = null;
+      })
+      .addCase(createUser.rejected, (state, action) => {
+        state.createStatus = 'failed';
+        state.createError = action.payload || 'Failed to create user';
+      })
+      .addCase(editUser.pending, (state) => {
+        state.editStatus = 'loading'; // Set loading status for editing
+      })
+      .addCase(editUser.fulfilled, (state, action) => {
+        state.editStatus = 'succeeded'; // Set succeeded status for editing
+        state.editError = null; // Clear any previous errors
+        // Update the user in the users list
+        const index = state.users.findIndex(user => user.id === action.payload.data.id);
+        if (index !== -1) {
+          state.users[index] = action.payload.data; // Replace the user with the updated data
+        }
+      })
+      .addCase(editUser.rejected, (state, action) => {
+        state.editStatus = 'failed'; // Set failed status for editing
+        state.editError = action.payload || 'Failed to edit user'; // Capture detailed error message
       });
   },
 });

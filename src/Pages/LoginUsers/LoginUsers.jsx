@@ -1,25 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FaEdit, FaTrashAlt } from 'react-icons/fa';
-import { fetchAllUsers } from '../../redux/Slices/allUsersSlice'; // Import the action
+import { fetchAllUsers, createUser, editUser } from '../../redux/Slices/allUsersSlice';
 
 const LoginUsers = () => {
   const dispatch = useDispatch();
-  const { users = [], status, error } = useSelector((state) => state.allusers); // Default users to an empty array
+  const { users = [], status, error } = useSelector((state) => state.allusers);
 
-  const [showAddPopup, setShowAddPopup] = useState(false); // State for Add User popup
-  const [showEditPopup, setShowEditPopup] = useState(false); // State for Edit User popup
-  const [editUser, setEditUser] = useState(null); // State for editing a specific user
+  const [showAddPopup, setShowAddPopup] = useState(false);
+  const [showEditPopup, setShowEditPopup] = useState(false);
+  const [editUserId, setEditUserId] = useState(null);
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    role: 'admin', // Default role is 'admin'
+    role: 'admin',
+    is_active: false, // Add this line
   });
 
   useEffect(() => {
-    dispatch(fetchAllUsers()); // Fetch all users when component mounts
+    dispatch(fetchAllUsers());
   }, [dispatch]);
 
   const handleInputChange = (e) => {
@@ -44,18 +45,42 @@ const LoginUsers = () => {
     setFormData({
       name: user.name,
       email: user.email,
-      password: '', // Not displaying password
+      password: '', // Password should not be pre-filled for security
       role: user.role,
+      is_active: user.is_active, // Add this line
     });
-    setEditUser(user);
+    setEditUserId(user.id); // Store the user's ID for editing
     setShowEditPopup(true);
+  };
+
+  const handleCreateUser = () => {
+    dispatch(createUser(formData))
+      .unwrap()
+      .then(() => {
+        setShowAddPopup(false);
+        dispatch(fetchAllUsers()); // Refresh user list after adding
+      })
+      .catch((error) => {
+        console.error('Failed to create user:', error);
+      });
+  };
+
+  const handleEditUser = () => {
+    dispatch(editUser({ userId: editUserId, updatedUserData: formData }))
+      .unwrap()
+      .then(() => {
+        setShowEditPopup(false);
+        dispatch(fetchAllUsers()); // Refresh user list after editing
+      })
+      .catch((error) => {
+        console.error('Failed to edit user:', error);
+      });
   };
 
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-6">User Management</h1>
 
-      {/* Button to trigger "Create New User" popup */}
       <button
         className="bg-blue-500 text-white py-2 px-4 mb-4 rounded"
         onClick={openAddPopup}
@@ -92,10 +117,10 @@ const LoginUsers = () => {
                       className="text-blue-500 mr-4"
                       onClick={() => openEditPopup(user)}
                     >
-                      <FaEdit /> {/* Edit icon */}
+                      <FaEdit />
                     </button>
                     <button className="text-red-500">
-                      <FaTrashAlt /> {/* Delete icon */}
+                      <FaTrashAlt />
                     </button>
                   </td>
                 </tr>
@@ -158,7 +183,10 @@ const LoginUsers = () => {
                 <option value="user">User</option>
               </select>
             </div>
-            <button className="bg-blue-500 text-white py-2 px-4 rounded mr-2">
+            <button
+              className="bg-blue-500 text-white py-2 px-4 rounded mr-2"
+              onClick={handleCreateUser}
+            >
               Create
             </button>
             <button
@@ -218,7 +246,21 @@ const LoginUsers = () => {
                 <option value="user">User</option>
               </select>
             </div>
-            <button className="bg-blue-500 text-white py-2 px-4 rounded mr-2">
+            <div className="mb-4">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={formData.is_active} // Use the is_active state
+                  onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })} // Update is_active
+                  className="mr-2"
+                />
+                Is Active
+              </label>
+            </div>
+            <button
+              className="bg-blue-500 text-white py-2 px-4 rounded mr-2"
+              onClick={handleEditUser}
+            >
               Update
             </button>
             <button
