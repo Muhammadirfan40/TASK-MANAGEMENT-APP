@@ -7,7 +7,7 @@ import NotFoundPage from './Pages/NotFoundPage/NotFoundPage';
 import DashboardPage from './Pages/DashboardPage/DashboardPage';
 import Mytasks from './Pages/Mytasks/Mytasks';
 import ProfileUpdate from './Pages/ProfileUpdate/ProfileUpdate';
-import LoginUsers from './Pages/LoginUsers/LoginUsers';
+import UserManagement from './Pages/UserManagement/UserManagement';
 import ProjectsManagement from './Component/ProjectsManagement/ProjectsManagement';
 
 
@@ -24,7 +24,7 @@ function App() {
         <Route path='/dashboardpage' element={<DashboardPage />} />
         <Route path='/dashboardpage/profileupdate' element={<ProfileUpdate />} />
         <Route path='/dashboardpage/mytasks' element={<Mytasks />} />
-        <Route path='/dashboardpage/allusers' element={<LoginUsers />} />
+        <Route path='/dashboardpage/usermanagement' element={<UserManagement />} />
         <Route path='/dashboardpage/projectmanagement' element={<ProjectsManagement />} />
 
 

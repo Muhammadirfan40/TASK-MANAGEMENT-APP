@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FaEdit, FaTrashAlt } from 'react-icons/fa';
-import { fetchAllUsers, createUser, editUser } from '../../redux/Slices/allUsersSlice';
+import { fetchAllUsers, createUser, editUser, deleteUser } from '../../redux/Slices/allUsersSlice';
 
-const LoginUsers = () => {
+const UserManagement = () => {
   const dispatch = useDispatch();
   const { users = [], status, error } = useSelector((state) => state.allusers);
 
@@ -77,6 +77,19 @@ const LoginUsers = () => {
       });
   };
 
+  const handleDeleteUser = (userId) => {
+    if (window.confirm('Are you sure you want to delete this user?')) {
+      dispatch(deleteUser(userId))
+        .unwrap()
+        .then(() => {
+          dispatch(fetchAllUsers()); // Refresh user list after deleting
+        })
+        .catch((error) => {
+          console.error('Failed to delete user:', error);
+        });
+    }
+  };
+
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-6">User Management</h1>
@@ -119,7 +132,7 @@ const LoginUsers = () => {
                     >
                       <FaEdit />
                     </button>
-                    <button className="text-red-500">
+                    <button className="text-red-500" onClick={() => handleDeleteUser(user.id)}>
                       <FaTrashAlt />
                     </button>
                   </td>
@@ -246,17 +259,6 @@ const LoginUsers = () => {
                 <option value="user">User</option>
               </select>
             </div>
-            <div className="mb-4">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.is_active} // Use the is_active state
-                  onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })} // Update is_active
-                  className="mr-2"
-                />
-                Is Active
-              </label>
-            </div>
             <button
               className="bg-blue-500 text-white py-2 px-4 rounded mr-2"
               onClick={handleEditUser}
@@ -276,4 +278,4 @@ const LoginUsers = () => {
   );
 };
 
-export default LoginUsers;
+export default UserManagement;

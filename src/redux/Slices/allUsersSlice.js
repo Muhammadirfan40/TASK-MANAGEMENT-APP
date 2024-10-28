@@ -80,6 +80,31 @@ export const editUser = createAsyncThunk(
   }
 );
 
+// Async thunk for deleting a user
+export const deleteUser = createAsyncThunk(
+  'users/deleteUser',
+  async (userId, { rejectWithValue }) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return rejectWithValue('No token found. Please log in again.');
+    }
+
+    try {
+      await axios.delete(`https://task-manager.codionslab.com/api/v1/admin/user/${userId}`, {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return userId; // Return the userId for filtering
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || error.message || 'Error deleting user'
+      );
+    }
+  }
+);
+
 const allUsersSlice = createSlice({
   name: 'allUsers',
   initialState: {
@@ -90,6 +115,8 @@ const allUsersSlice = createSlice({
     createError: null,    // Track errors for user creation
     editStatus: 'idle',   // Track the status for user editing
     editError: null,      // Track errors for user editing
+    deleteStatus: 'idle', // Track the status for user deletion
+    deleteError: null,    // Track errors for user deletion
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -133,6 +160,19 @@ const allUsersSlice = createSlice({
       .addCase(editUser.rejected, (state, action) => {
         state.editStatus = 'failed'; // Set failed status for editing
         state.editError = action.payload || 'Failed to edit user'; // Capture detailed error message
+      })
+      .addCase(deleteUser.pending, (state) => {
+        state.deleteStatus = 'loading'; // Set loading status for deletion
+      })
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        state.deleteStatus = 'succeeded'; // Set succeeded status for deletion
+        state.deleteError = null; // Clear any previous errors
+        // Remove the user from the list
+        state.users = state.users.filter(user => user.id !== action.payload); // Remove the deleted user
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
+        state.deleteStatus = 'failed'; // Set failed status for deletion
+        state.deleteError = action.payload || 'Failed to delete user'; // Capture detailed error message
       });
   },
 });

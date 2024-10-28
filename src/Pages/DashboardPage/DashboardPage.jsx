@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { logout } from '../../redux/slices/loginSlice';
 import ProfileUpdate from '../ProfileUpdate/ProfileUpdate';
 import Mytasks from '../Mytasks/Mytasks';
-import LoginUsers from '../LoginUsers/LoginUsers';
+import UserManagement from '../UserManagement/UserManagement';
 import ProjectsManagement from '../../Component/ProjectsManagement/ProjectsManagement';
 import { fetchAllUsers } from '../../redux/Slices/allUsersSlice';
 
@@ -13,7 +13,7 @@ const DashboardPage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const user = useSelector((state) => state.login); // Use optional chaining to prevent error
-console.log(user);
+    // console.log(user);
 
     const handleLogout = () => {
         dispatch(logout());
@@ -31,8 +31,8 @@ console.log(user);
                 return <Mytasks />;
             case 'projectmanagement':
                 return <ProjectsManagement />;
-            case 'allusers':
-                return (<LoginUsers />);
+            case 'usermanagement':
+                return (<UserManagement />);
             default:
                 return (
                     <section className="mb-8">
@@ -58,6 +58,7 @@ console.log(user);
 
     return (
         <div className="flex h-screen bg-gray-100">
+
             <aside className="bg-black text-white w-64 flex-shrink-0">
                 <div className="p-6">
                     <h1 className="text-3xl font-bold mb-6">Task Manager</h1>
@@ -98,9 +99,9 @@ console.log(user);
                             <li className="mb-4">
                                 <button
                                     className="block py-2 px-4 rounded hover:bg-gray-700 w-full text-left"
-                                    onClick={() => setActiveComponent('allusers')}
+                                    onClick={() => setActiveComponent('usermanagement')}
                                 >
-                                    Users
+                                    Users Managemaent
                                 </button>
                             </li>
                         </ul>
