@@ -1,15 +1,17 @@
 import { configureStore } from '@reduxjs/toolkit';
 import registerReducer from './slices/registerSlice';
-import loginReducer from './slices/loginSlice'; // Use the updated loginSlice
-import profileReducer from './Slices/profileSlice'; // Import the profileSlice
-import allUsersReducer from './Slices/allUsersSlice';
+import loginReducer from './slices/loginSlice';
+import profileReducer from './slices/profileSlice';
+import allUsersReducer from './slices/allUsersSlice';
+import projectManagementReducer from './Slices/projectManagementSlice'; // Import the project management slice
 
 const store = configureStore({
     reducer: {
         register: registerReducer,
-        login: loginReducer, // Include login slice for both login and logout
-        profile: profileReducer, // Add the profile slice
-        allusers: allUsersReducer, // Add the new reducer
+        login: loginReducer,
+        profile: profileReducer,
+        allusers: allUsersReducer,
+        projectManagement: projectManagementReducer, // Add the project management reducer
     },
 });
 

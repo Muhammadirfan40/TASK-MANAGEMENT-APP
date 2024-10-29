@@ -22,7 +22,7 @@ const LoginPage = () => {
         e.preventDefault();
         setLoading(true); // Set loading state to true when login request starts
         const response = await dispatch(loginUser({ email, password })); // Dispatch the loginUser action
-console.log("login page",response.payload.data.token);
+        console.log("login page", response.payload.data.token);
 
         if (response.meta.requestStatus === 'fulfilled') {
             const token = response.payload.data.token; // Adjust token access according to your response structure

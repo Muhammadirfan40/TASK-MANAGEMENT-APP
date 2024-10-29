@@ -23,7 +23,7 @@ export const loginUser = createAsyncThunk(
       // Store the token in localStorage
       localStorage.setItem('token', token);
       console.log(token);
-       // Store token on login
+      // Store token on login
       return data;
     } catch (error) {
       return rejectWithValue(error.message || 'Network error occurred');
@@ -62,7 +62,7 @@ const loginSlice = createSlice({
         state.isLoading = true; // Set loading state
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.user = action.payload; // Set user data
+        state.user = action.payload.data.user; // Set user data
         state.accessToken = action.payload.token; // Store the token in the state
         state.isLogin = true; // Set login state
         state.isLoading = false; // Clear loading state

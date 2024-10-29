@@ -12,8 +12,8 @@ const DashboardPage = () => {
     const [activeComponent, setActiveComponent] = useState('dashboard');
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const user = useSelector((state) => state.login); // Use optional chaining to prevent error
-    // console.log(user);
+    const user = useSelector((state) => state.login.user); // Use optional chaining to prevent error
+
 
     const handleLogout = () => {
         dispatch(logout());
@@ -113,14 +113,14 @@ const DashboardPage = () => {
                 <header className="bg-white shadow p-6 flex justify-between items-center">
                     <h2 className="text-2xl font-bold">Dashboard</h2>
                     <div className="flex items-center gap-2">
-                        <button className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 mr-4">
+                        {/* <button className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 mr-4">
                             Create Task
-                        </button>
+                        </button> */}
                         <div className="flex items-center gap-2">
-                            <span className="text-gray-700">{user?.name || 'User'}</span>
+                            <span className="text-xl font-bold">{user?.name || 'User'}</span>
                             <img
-                                className="h-10 w-10 rounded-full object-cover"
-                                src="https://www.shutterstock.com/image-vector/user-profile-icon-vector-avatar-600nw-2220431045.jpg"
+                                className="h-8 w-8 rounded-full object-cover "
+                                src="https://w7.pngwing.com/pngs/184/113/png-transparent-user-profile-computer-icons-profile-heroes-black-silhouette-thumbnail.png"
                                 alt="Profile"
                             />
                         </div>

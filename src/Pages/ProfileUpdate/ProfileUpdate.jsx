@@ -1,39 +1,39 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { updateProfile } from '../../redux/Slices/profileSlice';
+import { updateProfile, fetchUserProfile } from '../../redux/Slices/profileSlice';
 import { useNavigate } from 'react-router-dom';
 
 const ProfileUpdate = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    // Memoize the user data to avoid unnecessary re-renders
-    const user = useSelector((state) => state.login?.user);
-    const memoizedUser = useMemo(() => user, [user]);
-
-    const [name, setName] = useState(memoizedUser?.name || '');
-    const [email, setEmail] = useState(memoizedUser?.email || '');
+    const { user, loading, error } = useSelector((state) => state.profile);
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    // Avoid infinite re-render by only updating state when memoized user data changes
+    // Fetch user profile data when the component mounts
     useEffect(() => {
-        if (memoizedUser) {
-            setName(memoizedUser.name || '');
-            setEmail(memoizedUser.email || '');
+        dispatch(fetchUserProfile());
+    }, [dispatch]);
+
+    // Update state when user data is fetched
+    useEffect(() => {
+        if (user) {
+            setName(user.name || '');
+            setEmail(user.email || '');
         }
-    }, [memoizedUser]);
+    }, [user]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Prepare profile update payload
         const updatedProfile = {
             name,
             email,
             password,
         };
 
-        // Dispatch the updateProfile action with the form data
         dispatch(updateProfile(updatedProfile)).then(() => {
             navigate('/dashboard'); // Navigate to dashboard on success
         });
@@ -42,6 +42,8 @@ const ProfileUpdate = () => {
     return (
         <div className="w-full max-w-md mx-auto bg-white p-8 border border-gray-300 shadow-md rounded-md">
             <h2 className="text-2xl font-semibold text-center mb-6">Update Profile</h2>
+            {loading && <p>Loading...</p>}
+            {error && <p className="text-red-500">{error}</p>}
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">Name</label>

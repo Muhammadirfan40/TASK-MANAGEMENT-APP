@@ -91,48 +91,58 @@ const UserManagement = () => {
   };
 
   return (
+
     <div className="p-8">
-      <h1 className="text-3xl font-bold mb-6">User Management</h1>
 
-      <button
-        className="bg-blue-500 text-white py-2 px-4 mb-4 rounded"
-        onClick={openAddPopup}
-      >
-        Create New User
-      </button>
+      <div className='flex justify-between'>
 
+        <h1 className="text-3xl font-bold mb-6">User Management</h1>
+
+        <button
+          className="bg-blue-500 text-white py-2 px-4 mb-4 rounded"
+          onClick={openAddPopup}
+        >
+          Create New User
+        </button>
+
+      </div>
+
+      {/* All users table */}
       <div className="mb-6">
-        <h3 className="text-lg font-bold mb-2">All Users</h3>
-        <table className="min-w-full bg-white border border-gray-300">
-          <thead>
+        <h3 className="text-2xl font-semibold mb-4 text-gray-800">All Users</h3>
+        <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden border border-gray-300">
+          <thead className="bg-gray-100">
             <tr>
-              <th className="py-2 px-4 border-b border-gray-300">User Name</th>
-              <th className="py-2 px-4 border-b border-gray-300">Email</th>
-              <th className="py-2 px-4 border-b border-gray-300">Role</th>
-              <th className="py-2 px-4 border-b border-gray-300">Actions</th>
+              <th className="py-3 px-4 text-left text-gray-600 font-semibold border-b">User Name</th>
+              <th className="py-3 px-4 text-left text-gray-600 font-semibold border-b">Email</th>
+              <th className="py-3 px-4 text-left text-gray-600 font-semibold border-b">Role</th>
+              <th className="py-3 px-4 text-left text-gray-600 font-semibold border-b">Actions</th>
             </tr>
           </thead>
           <tbody>
             {status === 'loading' ? (
               <tr>
-                <td colSpan="4" className="py-2 px-4 border-b border-gray-300 text-center">
+                <td colSpan="4" className="py-4 text-center text-gray-500 border-b">
                   Loading...
                 </td>
               </tr>
             ) : users.length > 0 ? (
               users.map((user) => (
-                <tr key={user.id}>
-                  <td className="py-2 px-4 border-b border-gray-300">{user.name}</td>
-                  <td className="py-2 px-4 border-b border-gray-300">{user.email}</td>
-                  <td className="py-2 px-4 border-b border-gray-300">{user.role}</td>
-                  <td className="py-2 px-4 border-b border-gray-300">
+                <tr key={user.id} className="hover:bg-gray-50 transition-colors duration-200">
+                  <td className="py-3 px-4 border-b border-gray-300">{user.name}</td>
+                  <td className="py-3 px-4 border-b border-gray-300">{user.email}</td>
+                  <td className="py-3 px-4 border-b border-gray-300">{user.role}</td>
+                  <td className="py-3 px-4 border-b border-gray-300">
                     <button
-                      className="text-blue-500 mr-4"
+                      className="text-blue-500 hover:text-blue-700 mr-4 transition-colors duration-200"
                       onClick={() => openEditPopup(user)}
                     >
                       <FaEdit />
                     </button>
-                    <button className="text-red-500" onClick={() => handleDeleteUser(user.id)}>
+                    <button
+                      className="text-red-500 hover:text-red-700 transition-colors duration-200"
+                      onClick={() => handleDeleteUser(user.id)}
+                    >
                       <FaTrashAlt />
                     </button>
                   </td>
@@ -140,7 +150,7 @@ const UserManagement = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="py-2 px-4 border-b border-gray-300 text-center">
+                <td colSpan="4" className="py-4 text-center text-gray-500 border-b">
                   No users found.
                 </td>
               </tr>
@@ -149,65 +159,71 @@ const UserManagement = () => {
         </table>
       </div>
 
+
       {/* Popup for creating a new user */}
       {showAddPopup && (
         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-4 rounded-lg shadow-lg w-96">
-            <h2 className="text-2xl font-bold mb-4">Create New User</h2>
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Create New User</h2>
             <div className="mb-4">
-              <label className="block text-sm font-bold mb-2">Name</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-600">Name</label>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded"
+                className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter user name"
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-bold mb-2">Email</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-600">Email</label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded"
+                className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter user email"
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-bold mb-2">Password</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-600">Password</label>
               <input
                 type="password"
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded"
+                className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter password"
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-bold mb-2">Role</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-600">Role</label>
               <select
                 name="role"
                 value={formData.role}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded"
+                className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="admin">Admin</option>
                 <option value="user">User</option>
               </select>
             </div>
-            <button
-              className="bg-blue-500 text-white py-2 px-4 rounded mr-2"
-              onClick={handleCreateUser}
-            >
-              Create
-            </button>
-            <button
-              className="bg-red-500 text-white py-2 px-4 rounded"
-              onClick={() => setShowAddPopup(false)}
-            >
-              Close
-            </button>
+            <div className="flex justify-end gap-2 mt-6">
+              <button
+                className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-200"
+                onClick={handleCreateUser}
+              >
+                Create
+              </button>
+              <button
+                className="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition duration-200"
+                onClick={() => setShowAddPopup(false)}
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -215,67 +231,76 @@ const UserManagement = () => {
       {/* Popup for editing a user */}
       {showEditPopup && (
         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-4 rounded-lg shadow-lg w-96">
-            <h2 className="text-2xl font-bold mb-4">Edit User</h2>
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Edit User</h2>
             <div className="mb-4">
-              <label className="block text-sm font-bold mb-2">Name</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-600">Name</label>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded"
+                className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter user name"
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-bold mb-2">Email</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-600">Email</label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded"
+                className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter user email"
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-bold mb-2">Password</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-600">Password</label>
               <input
                 type="password"
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded"
+                className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter password"
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-bold mb-2">Role</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-600">Role</label>
               <select
                 name="role"
                 value={formData.role}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded"
+                className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="admin">Admin</option>
                 <option value="user">User</option>
               </select>
             </div>
-            <button
-              className="bg-blue-500 text-white py-2 px-4 rounded mr-2"
-              onClick={handleEditUser}
-            >
-              Update
-            </button>
-            <button
-              className="bg-red-500 text-white py-2 px-4 rounded"
-              onClick={() => setShowEditPopup(false)}
-            >
-              Close
-            </button>
+            <div className="flex justify-end gap-2 mt-6">
+              <button
+                className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-200"
+                onClick={handleEditUser}
+              >
+                Update
+              </button>
+              <button
+                className="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition duration-200"
+                onClick={() => setShowEditPopup(false)}
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
+
+
     </div>
+
   );
+
 };
 
 export default UserManagement;
